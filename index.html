@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>GifTastic HW</title>
+    <link rel="stylesheet" type="text/css" href="reset.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Singer Search</h1>
+        <div id="buttons">
+            <button class="buttons" id="beyButton" data-name="Beyonce">Beyonce</button>
+            <button class="buttons" id="ytgButton" data-name="Young the Giant">Young the Giant</button>
+            <button class="buttons" id="szaButton" data-name="SZA">SZA</button>
+        </div>
+        <form id="searchForm">
+            <!--<label for="singer-input">Go!</label>-->
+            <input type="text" id="userSearch">
+            <br>
+            <!-- Button triggers new singer to be added -->
+            <input id="searchButton" type="submit" value="Search for your Singer!">
+        </form>
+        <div id="gifs">
+            <img src="https://media1.giphy.com/media/3o85xkQpyMlnBkpB9C/200_s.gif" data-still="https://media1.giphy.com/media/3o85xkQpyMlnBkpB9C/200_s.gif" data-animate="https://media1.giphy.com/media/3o85xkQpyMlnBkpB9C/200.gif" data-state="still" class="gif">
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+
+        // singers to be turned into buttons
+        var singers = ["Beyonce", "Young the Giant", "SZA"];
+
+        // //User adds singer
+        // $("#searchButton").on("click", function() {
+
+        //     //Clear the buttons so they won"t duplicate on the page
+        //     $("#buttons").empty();
+
+        //     //Takes value of button
+        //     var newSinger = $("#userSearch").val();
+
+        //     //Adds singer
+        //     for (i = 0; i < singers.length; i++) {
+
+        //     //Adds newsinger to the singers array
+        //     singers.push(newSinger);
+
+        //     //Calls the loop again with the new singer
+        //     newButton();
+
+        //  };
+
+        //User clicks on singer button
+        $(".buttons").on("click", function() {
+
+                //ID"s which button selected
+                var clickedSinger = $(this).data("name");
+
+                console.log($(this).data("name"));
+
+                //Adds singer to the queryURL
+                var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + clickedSinger + "&api_key=WHra1V0f2Ie6ObyWDpyRFu8FCIElbc4b&limit=10";
+
+                //Ajax call
+                $.ajax({
+                        url: queryURL,
+                        method: "GET"
+                    })
+
+                    //Ajax response
+                    .done(function(response) {
+
+                        //Console log object returned
+                        console.log(response);
+
+                        //Set the response to results variable
+                        var results = response.data;
+
+                        //Empty out previous gifs
+                        $("#buttons").empty();
+
+                        //Loop to display all 10 gifs
+                        for (var i = 0; i < results.length; i++) {
+
+                            //Create singerDiv
+                            var singerDiv = $("<div>");
+
+                            //Create p
+                            var p = $("<p>");
+
+                            //Set rating to variable
+                            var rating = results[i].rating.toUpperCase();
+
+                            //Tests if rating is given
+                            if (rating == "){
+
+                                p.text("Not rated");
+                            }
+                            else {
+                                p.text("Rated " + rating);
+                            }
+
+                            //Create img tag    
+                            var singerImage = $("<img>");
+
+                            //Attribute source
+                            singerImage.attr("src", results[i].images.fixed_height_small_still.url);
+
+                            //Attribute still image
+                            singerImage.attr("data-still", results[i].images.fixed_height_small_still.url);
+
+                            //Attribute active image
+                            singerImage.attr("data-active", results[i].images.fixed_height_small.url);
+
+                            //Append the rating
+                            singerDiv.append(p);
+
+                            //Append singerImage to the div
+                            singerDiv.append(singerImage);
+
+                            //Prepend to #singers
+                            $("#singers").prepend(singerDiv);
+
+                        }
+
+                        //On click to animate gifs  
+
+                        $(".gif").on("click", function(e) {
+
+                            console.log(e);
+
+                            //Set current to the current URL
+                            var current = e.currentTarget.dataset.still;
+
+                            //Set active to the active URL
+                            var active = e.currentTarget.dataset.active;
+
+                            //Set still to the still URL
+                            var still = e.currentTarget.dataset.still;
+
+                            if (current == still) {
+
+                                //Switch to active URL
+                                $(this).attr("src", active);
+
+                                //Set current
+                                current = active;
+
+                            } else {
+
+                                //Switch to still URL
+                                $(this).attr("src", still);
+
+                                //Set current
+                                current = still;
+                            }
+
+                        })
+
+                    })
+
+            };
+        };
+
+    });
+    //Start the app
+    //newButton();
+    </script>
+</body>
+
+</html>
